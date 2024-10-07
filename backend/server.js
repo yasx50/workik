@@ -7,9 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const clientId = process.env.GITHUB_CLIENT_ID; // Ensure these are set in your .env file
-const clientSecret = process.env.GITHUB_CLIENT_SECRET; // Ensure these are set in your .env file
-const redirectUri = 'http://localhost:5173'; // Update this to match your React frontend
+const { GITHUB_CLIENT_ID: clientId, GITHUB_CLIENT_SECRET: clientSecret } = process.env;
+const redirectUri = 'http://localhost:5173';
 
 // Route to initiate the GitHub login process
 app.get('/github-login', (req, res) => {
@@ -18,9 +17,9 @@ app.get('/github-login', (req, res) => {
   res.redirect(authUrl);
 });
 
-// Callback route after GitHub redirects back
-app.get('/callback', async (req, res) => {
-  const requestToken = req.query.code; // Get the authorization code from the query
+// Handle the callback after GitHub redirects back (change this to POST)
+app.post('/callback', async (req, res) => {
+  const { code } = req.body; // Get the authorization code from the frontend
 
   try {
     const response = await axios.post(
@@ -28,28 +27,24 @@ app.get('/callback', async (req, res) => {
       {
         client_id: clientId,
         client_secret: clientSecret,
-        code: requestToken,
-        redirect_uri: `${redirectUri}/callback`, // Ensure this matches what you set in GitHub
+        code,
+        redirect_uri: `${redirectUri}/callback`,
       },
       {
         headers: { Accept: 'application/json' },
       }
     );
 
-    const accessToken = response.data.access_token; // Get the access token from the response
+    const accessToken = response.data.access_token;
 
-    
     if (accessToken) {
-      // Redirect to the frontend with the token as a query parameter
-      res.redirect(`${redirectUri}/?token=${accessToken}`);
-      
+      res.json({ token: accessToken }); // Send the access token back to the frontend
     } else {
-      console.log('token missing');
       
       res.status(500).send('Token not found');
     }
   } catch (error) {
-    console.error('Error exchanging code for token:', error);
+    console.error('Error exchanging code for token:', error.response?.data || error.message);
     res.status(500).send('Error exchanging code for token');
   }
 });

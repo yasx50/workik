@@ -3,21 +3,28 @@ import axios from 'axios';
 
 function App() {
   const [token, setToken] = useState('');
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+    const code = urlParams.get('code'); // Get the authorization code from URL
 
     if (code) {
-      setToken(code);
-      console.log(code)
-      // Store the token in localStorage or state if needed
+      // Send the authorization code to the backend to exchange for an access token
+      fetchAccessToken(code);
     }
   }, []);
 
-  const connectToGithub = () => {
-    // Make the request to your backend to start GitHub OAuth process
-    window.location.href = 'http://localhost:4000/github-login';
+  const fetchAccessToken = async (code) => {
+    try {
+      const response = await axios.post('http://localhost:4000/callback', { code });
+      const accessToken = response.data.token;
+      
+      setToken(accessToken); // Store the token in state
+      console.log('Access Token:', accessToken);
+    } catch (error) {
+      console.error('Error fetching access token:', error.response?.data || error.message);
+    }
   };
 
   const fetchGithubData = async () => {
@@ -25,14 +32,22 @@ function App() {
       try {
         const response = await axios.get('https://api.github.com/user', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Use Bearer token for authorization
           },
         });
-        console.log(response.data); // Handle the user data
+        setUserData(response.data);
+        console.log('GitHub User Data:', response.data);
       } catch (error) {
-        console.error('Error fetching GitHub data:', error);
+        console.error('Error fetching GitHub data:', error.response?.data || error.message);
       }
+    } else {
+      console.warn('No token available to fetch GitHub data');
     }
+  };
+
+  const connectToGithub = () => {
+    // Redirect to your backend to start GitHub OAuth process
+    window.location.href = 'http://localhost:4000/github-login';
   };
 
   return (
@@ -55,6 +70,15 @@ function App() {
             >
               Get GitHub User Info
             </button>
+          </div>
+        )}
+
+        {userData && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold">GitHub User Info:</h2>
+            <p>Username: {userData.login}</p>
+            <p>Name: {userData.name}</p>
+            <img src={userData.avatar_url} alt="Avatar" width="100" />
           </div>
         )}
       </div>
