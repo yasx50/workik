@@ -10,6 +10,7 @@ function App() {
 
     if (code) {
       setToken(code);
+      console.log(code)
       // Store the token in localStorage or state if needed
     }
   }, []);
@@ -24,7 +25,7 @@ function App() {
       try {
         const response = await axios.get('https://api.github.com/user', {
           headers: {
-            Authorization: `token ${code}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         console.log(response.data); // Handle the user data
