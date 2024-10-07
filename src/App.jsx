@@ -6,10 +6,10 @@ function App() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get('token');
+    const code = urlParams.get('code');
 
-    if (accessToken) {
-      setToken(accessToken);
+    if (code) {
+      setToken(code);
       // Store the token in localStorage or state if needed
     }
   }, []);
@@ -24,7 +24,7 @@ function App() {
       try {
         const response = await axios.get('https://api.github.com/user', {
           headers: {
-            Authorization: `token ${token}`,
+            Authorization: `token ${code}`,
           },
         });
         console.log(response.data); // Handle the user data

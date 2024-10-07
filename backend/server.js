@@ -42,6 +42,8 @@ app.get('/callback', async (req, res) => {
       // Redirect to the frontend with the token as a query parameter
       res.redirect(`${redirectUri}/?token=${accessToken}`);
     } else {
+      console.log('token missing');
+      
       res.status(500).send('Token not found');
     }
   } catch (error) {
