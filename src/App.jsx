@@ -21,7 +21,7 @@ function App() {
       const accessToken = response.data.token;
       
       setToken(accessToken); // Store the token in state
-      console.log('Access Token:', accessToken);
+     
     } catch (error) {
       console.error('Error fetching access token:', error.response?.data || error.message);
     }
@@ -36,7 +36,7 @@ function App() {
           },
         });
         setUserData(response.data);
-        console.log('GitHub User Data:', response.data);
+        // console.log('GitHub User Data:', response.data);
       } catch (error) {
         console.error('Error fetching GitHub data:', error.response?.data || error.message);
       }
@@ -51,8 +51,11 @@ function App() {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
+    <div className="h-screen  items-center justify-center bg-gray-100">
+     <div>
+     <h2 className=' text-6xl font-extrabold text-center w-[100%] bg-indigo-500 text-yellow-400'>WorkIk</h2>
+     </div>
+      <div className=" text-center mt-40">
         <h1 className="text-4xl font-bold mb-6">Connect to GitHub</h1>
         <button
           onClick={connectToGithub}
@@ -74,12 +77,16 @@ function App() {
         )}
 
         {userData && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-semibold">GitHub User Info:</h2>
-            <p>Username: {userData.login}</p>
-            <p>Name: {userData.name}</p>
-            <img src={userData.avatar_url} alt="Avatar" width="100" />
-          </div>
+          <div className="mt-8 bg-white p-6 shadow-md rounded-lg">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700">GitHub User Info:</h2>
+          <img 
+            src={userData.avatar_url} 
+            alt="Avatar" 
+            className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg"
+          />
+          <p className="text-xl font-bold text-gray-900">Username: <span className="text-blue-500">{userData.login}</span></p>
+          <p className="text-lg text-gray-700">Name: {userData.name || 'N/A'}</p>
+        </div>
         )}
       </div>
     </div>

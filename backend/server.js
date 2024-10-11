@@ -8,14 +8,42 @@ app.use(cors());
 app.use(express.json());
 
 const { GITHUB_CLIENT_ID: clientId, GITHUB_CLIENT_SECRET: clientSecret } = process.env;
-const redirectUri = 'http://localhost:5173';
+const redirectUri = 'https://3b68-2401-4900-54e7-97a0-68f0-43bb-44e0-575a.ngrok-free.app';
+                                         
+
 
 // Route to initiate the GitHub login process
 app.get('/github-login', (req, res) => {
-  const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}/callback`;
+  const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}/webhook`;
   console.log('Redirecting to GitHub for login');
   res.redirect(authUrl);
 });
+
+app.get('/webhook',(req,res)=>{
+  res.send("webhook is triggered")
+})
+
+app.post('/webhook', (req, res) => {
+  const pr = req.body.pull_request;
+
+  if (pr) {
+    const prData = {
+      title: pr.title,
+      body: pr.body,
+      number: pr.number,
+      state: pr.state,
+      author: pr.user.login,
+      url: pr.html_url
+    };
+
+    console.log('Pull Request Data:', prData);  // Log all necessary PR details
+
+    
+    res.status(200).send("Webhook received and processed pull request");
+  } 
+});
+
+
 
 // Handle the callback after GitHub redirects back (change this to POST)
 app.post('/callback', async (req, res) => {
