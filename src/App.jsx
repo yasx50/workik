@@ -53,7 +53,7 @@ function App() {
   return (
     <div className="h-screen  items-center justify-center bg-gray-100">
      <div>
-     <h2 className=' text-6xl font-extrabold text-center w-[100%] bg-indigo-500 text-yellow-400'>WorkIk</h2>
+     <h2 className=' text-6xl font-extrabold text-center w-[100%] bg-indigo-500 text-yellow-400'> for WorkIk </h2>
      </div>
       <div className=" text-center mt-40">
         <h1 className="text-4xl font-bold mb-6">Connect to GitHub</h1>
