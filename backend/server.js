@@ -36,7 +36,6 @@ app.post('/webhook', (req, res) => {
       url: pr.html_url
     };
 
-    console.log('Pull Request Data:', prData);  // Log all necessary PR details
 
     
     res.status(200).send("Webhook received and processed pull request");
